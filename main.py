@@ -48,9 +48,9 @@ def main(argv):
             #time.sleep(.2)
             ret, frame = cap.read()
             if ret == True:
-                cv2.imwrite(RAW_FOLDER_NAME + "/frame%d.jpg" % frame_num, frame)
                 if frame_num > len(annotations) -1:
                     break
+                cv2.imwrite(RAW_FOLDER_NAME + "/frame%d.jpg" % frame_num, frame)
                 for i in annotations[frame_num]:
                     frame = cv2.rectangle(frame, (int(i['x']), int(i['y'])), (int(i['x'])+int(i['width']), int(i['y'])+int(i['height'])), (255,0,0), 5)
                 print(annotations[frame_num])
