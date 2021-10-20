@@ -11,8 +11,8 @@ def main(argv):
     FILE_NAME = "/home/pradeepsen99/Desktop/Research/1050s1132a1110s3004-2s5310-1.mp4"
     ANNOT_FILE = ""
     SKIP_VAL = 15
-    RAW_FOLDER_NAME = "Raw images"
-    ANNOT_FOLDER_NAME = "Annotated images"
+    RAW_FOLDER_NAME = "raw_images"
+    ANNOT_FOLDER_NAME = "annotated_images"
 
     try:
         opts, args = getopt.getopt(argv, "i:s:a:")
@@ -45,17 +45,19 @@ def main(argv):
     frame_num = 0
     while cap.isOpened():
         if frame_num % SKIP_VAL == 0:
-            time.sleep(.2)
+            #time.sleep(.2)
             ret, frame = cap.read()
             if ret == True:
-                cv2.imwrite(ANNOT_FOLDER_NAME + "/frame%d.jpg" % frame_num, frame)
+                cv2.imwrite(RAW_FOLDER_NAME + "/frame%d.jpg" % frame_num, frame)
+                if frame_num > len(annotations) -1:
+                    break
                 for i in annotations[frame_num]:
                     frame = cv2.rectangle(frame, (int(i['x']), int(i['y'])), (int(i['x'])+int(i['width']), int(i['y'])+int(i['height'])), (255,0,0), 5)
                 print(annotations[frame_num])
                 frame = cv2.resize(frame, (960, 540))
                 cv2.putText(frame, "Frame: " +str( frame_num), (10, 30),cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-                cv2.imwrite(RAW_FOLDER_NAME + "/frame%d.jpg" % frame_num, frame)
                 cv2.imshow("Frame", frame)
+                cv2.imwrite(ANNOT_FOLDER_NAME + "/frame%d.jpg" % frame_num, frame)
                 if cv2.waitKey(25) & 0xFF == ord('q'):
                     break
             else:
@@ -64,7 +66,6 @@ def main(argv):
         else:
             ret, frame = cap.read()
     cap.release()
-    cap.destroyAllWindows()
 
     ANNOT_FILE.close()
 
