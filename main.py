@@ -6,6 +6,7 @@ import json
 import os
 import shutil
 import sys, getopt
+import numpy as np
 
 def main(argv):
     FILE_NAME = "/home/pradeepsen99/Desktop/Research/1050s1132a1110s3004-2s5310-1.mp4"
@@ -52,7 +53,14 @@ def main(argv):
                     break
                 cv2.imwrite(RAW_FOLDER_NAME + "/frame%d.jpg" % frame_num, frame)
                 for i in annotations[frame_num]:
-                    frame = cv2.rectangle(frame, (int(i['x']), int(i['y'])), (int(i['x'])+int(i['width']), int(i['y'])+int(i['height'])), (255,0,0), 5)
+                    if i['type'] == "bounding_box":
+                        frame = cv2.rectangle(frame, (int(i['x']), int(i['y'])), (int(i['x'])+int(i['width']), int(i['y'])+int(i['height'])), (255,0,255), 5)
+                    elif i['type'] == "segmentation":
+                        points = []
+                        for i in i['points']:
+                            points.append([int(i['x']), int(i['y'])])
+                        points = np.array(points).reshape((-1, 1, 2))
+                        frame = cv2.polylines(frame, [points], True, (0, 255, 0), 8)
                 print(annotations[frame_num])
                 frame = cv2.resize(frame, (960, 540))
                 cv2.putText(frame, "Frame: " +str( frame_num), (10, 30),cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
